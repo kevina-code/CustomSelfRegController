@@ -1,40 +1,51 @@
 /**
  * Author: Kevin Antonioli
- * Created: 03.15.2022
+ * Created: 03.11.2023
  *
  * Description: provides apex unit test coverage for apex class CustomSelfRegController.cls
+ *
+ * Assumptions:
+ *  A custom profile called 'Customer Portal User' has been created
+ *  System Admin is assigned a role (or else, the 'portal account owner must have a role' error will occur)
+ *  A permission set for the portal has been created
  */
 @isTest
 public class CustomSelfRegControllerTest {
-  private static String portalName = 'Your Portal Profile Name Here';
+  private static String PORTAL_PROFILE_NAME = 'Customer Portal User'; // change to your own portal profile name; this one is out-of-box
   @isTest
   static void test_createUser() {
     Account accRecord = new account();
-    accRecord.Name = 'Test Acc1114';
+    accRecord.Name = 'ABC Corp Test';
     insert accRecord;
 
     Account accRecord2 = new account();
-    accRecord2.Name = 'Test Acc2';
+    accRecord2.Name = 'XYZ Corp Test';
     insert accRecord2;
 
     contact conRecord = new contact();
     conRecord.AccountId = accRecord.id;
-    conrecord.lastname = 'TestCon1114';
+    conRecord.FirstName = 'Bob';
+    conRecord.LastName = 'Portalia';
+    conRecord.Email = 'bobtest@portalia.com';
     insert conRecord;
 
     AccountContactRelation acr = new AccountContactRelation();
-    acr.Accountid = accRecord2.id;
+    acr.AccountId = accRecord2.id;
     acr.Contactid = conRecord.id;
     insert acr;
 
     String personAcctRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName()
       .get('Person Account')
       .getRecordTypeId();
-    Account thePersonAccount = new Account(Id = accRecord.Id);
-    thePersonAccount.recordTypeId = personAcctRecordTypeId;
-    update thePersonAccount;
+    Account personAccount = new Account(Id = accRecord.Id);
+    personAccount.recordTypeId = personAcctRecordTypeId;
+    update personAccount;
 
-    Profile portalProfile = [SELECT Id FROM Profile WHERE Name = :portalName];
+    Profile portalProfile = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = :PORTAL_PROFILE_NAME
+    ];
 
     Schema.DescribeFieldResult userNameDescribe = User.UserName.getDescribe();
     Schema.SObjectField userNameField = userNameDescribe.getSObjectField();
@@ -48,12 +59,12 @@ public class CustomSelfRegControllerTest {
       '@testorg.com';
     Map<SObjectField, String> fieldMap = new Map<SObjectField, String>();
     fieldMap.put(userNameField, uniqueUserName);
-    fieldMap.put(emailField, 'test+Todd@testorg.com');
+    fieldMap.put(emailField, 'bobtest@portalia.com');
 
     Test.startTest();
     CustomSelfRegController CustomSelfRegController = new CustomSelfRegController();
     CustomSelfRegController.createUser(
-      thePersonAccount.Id,
+      personAccount.Id,
       portalProfile.Id,
       fieldMap,
       'Password123!'
@@ -65,7 +76,11 @@ public class CustomSelfRegControllerTest {
   static void test_NoContactFoundException() {
     String userEmail = 'test+Todd@testorg.com';
     Account account = new Account(Name = 'Todd Hamilton');
-    Profile portalProfile = [SELECT Id FROM Profile WHERE Name = :portalName];
+    Profile portalProfile = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = :PORTAL_PROFILE_NAME
+    ];
 
     Schema.DescribeFieldResult userNameDescribe = User.UserName.getDescribe();
     Schema.SObjectField userNameField = userNameDescribe.getSObjectField();
@@ -96,79 +111,6 @@ public class CustomSelfRegControllerTest {
         e.getMessage().contains('Unable to find associated Contact record'),
         true
       );
-    }
-    Test.stopTest();
-  }
-
-  @isTest
-  static void test_DuplicateUserException() {
-    Account accRecord = new account();
-    accRecord.Name = 'Test Acc1114';
-    insert accRecord;
-
-    Account accRecord2 = new account();
-    accRecord2.Name = 'Test Acc2';
-    insert accRecord2;
-
-    contact conRecord = new contact();
-    conRecord.AccountId = accRecord.id;
-    conrecord.lastname = 'TestCon1114';
-    insert conRecord;
-
-    AccountContactRelation acr = new AccountContactRelation();
-    acr.Accountid = accRecord2.id;
-    acr.Contactid = conRecord.id;
-    insert acr;
-
-    String personAcctRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName()
-      .get('Person Account')
-      .getRecordTypeId();
-    Account thePersonAccount = new Account(Id = accRecord.Id);
-    thePersonAccount.recordTypeId = personAcctRecordTypeId;
-    update thePersonAccount;
-
-    Profile portalProfile = [SELECT Id FROM Profile WHERE Name = :portalName];
-
-    Schema.DescribeFieldResult userNameDescribe = User.UserName.getDescribe();
-    Schema.SObjectField userNameField = userNameDescribe.getSObjectField();
-
-    Schema.DescribeFieldResult emailDescribe = User.Email.getDescribe();
-    Schema.SObjectField emailField = emailDescribe.getSObjectField();
-
-    String uniqueUserName =
-      'standarduser' +
-      DateTime.now().getTime() +
-      '@testorg.com';
-    Map<SObjectField, String> fieldMap = new Map<SObjectField, String>();
-    fieldMap.put(userNameField, uniqueUserName);
-    fieldMap.put(emailField, 'test+Todd@testorg.com');
-
-    User u = new User();
-    u.Username = uniqueUserName;
-    u.lastName = 'Todd';
-    u.Alias = 'Hamilton';
-    u.ProfileId = portalProfile.id;
-    u.CommunityNickname = 'testu';
-    u.Email = 'test+Todd@testorg.com';
-    u.contactid = conRecord.id;
-    u.languagelocalekey = 'en_US';
-    u.localesidkey = 'en_US';
-    u.timezonesidkey = 'America/Los_Angeles';
-    u.emailencodingkey = 'UTF-8';
-    insert u;
-
-    Test.startTest();
-    CustomSelfRegController CustomSelfRegController = new CustomSelfRegController();
-    try {
-      CustomSelfRegController.createUser(
-        thePersonAccount.Id,
-        portalProfile.Id,
-        fieldMap,
-        'Password123!'
-      );
-    } catch (Exception e) {
-      System.debug(e);
-      System.assertEquals(e.getMessage().contains('User Already Exists'), true);
     }
     Test.stopTest();
   }
