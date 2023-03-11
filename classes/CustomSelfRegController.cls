@@ -16,7 +16,6 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
     .split('');
   private final String[] NUMBER_CHARS = '1234567890'.split('');
   private final String[] SPECIAL_CHARS = '!#$%-_=+<>'.split('');
-  private User portalUser;
 
   /**
    * @description: called once after user verification in portal (if any was configured)
@@ -43,16 +42,10 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
       String value = registrationAttributes.get(field);
     }
     try {
-      portalUser = [
-        SELECT Id, Name, ContactId
-        FROM User
-        WHERE Email = :userEmail
-      ];
-
       List<Contact> contactList = [
         SELECT Id, LastName, FirstName, Email
         FROM Contact
-        WHERE Id = :portalUser.ContactId AND IsPersonAccount = TRUE
+        WHERE Email = :userEmail AND IsPersonAccount = TRUE
         ORDER BY CreatedDate DESC
         LIMIT 1
       ];
