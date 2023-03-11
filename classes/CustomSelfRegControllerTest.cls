@@ -70,6 +70,13 @@ public class CustomSelfRegControllerTest {
       'Password123!'
     );
     Test.stopTest();
+
+    List<User> portalUsers = [
+      SELECT Id
+      FROM User
+      WHERE ProfileId = :portalProfile.Id
+    ];
+    Assert.isTrue(!portalUsers.isEmpty());
   }
 
   @isTest
@@ -107,9 +114,8 @@ public class CustomSelfRegControllerTest {
       );
     } catch (Exception e) {
       System.debug(e);
-      System.assertEquals(
-        e.getMessage().contains('Unable to find associated Contact record'),
-        true
+      Assert.isTrue(
+        e.getMessage().contains('Unable to find associated Contact record')
       );
     }
     Test.stopTest();
