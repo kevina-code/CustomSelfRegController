@@ -6,6 +6,7 @@
  */
 @isTest
 public class CustomSelfRegControllerTest {
+  private static String portalName = 'Your Portal Profile Name Here';
   @isTest
   static void test_createUser() {
     Account accRecord = new account();
@@ -33,11 +34,7 @@ public class CustomSelfRegControllerTest {
     thePersonAccount.recordTypeId = personAcctRecordTypeId;
     update thePersonAccount;
 
-    Profile portalProfile = [
-      SELECT Id
-      FROM Profile
-      WHERE Name = 'Your Portal Profile Name Here'
-    ];
+    Profile portalProfile = [SELECT Id FROM Profile WHERE Name = :portalName];
 
     Schema.DescribeFieldResult userNameDescribe = User.UserName.getDescribe();
     Schema.SObjectField userNameField = userNameDescribe.getSObjectField();
@@ -68,11 +65,7 @@ public class CustomSelfRegControllerTest {
   static void test_NoContactFoundException() {
     String userEmail = 'test+Todd@testorg.com';
     Account account = new Account(Name = 'Todd Hamilton');
-    Profile portalProfile = [
-      SELECT Id
-      FROM Profile
-      WHERE Name = 'Your Portal Profile Name Here'
-    ];
+    Profile portalProfile = [SELECT Id FROM Profile WHERE Name = :portalName];
 
     Schema.DescribeFieldResult userNameDescribe = User.UserName.getDescribe();
     Schema.SObjectField userNameField = userNameDescribe.getSObjectField();
@@ -134,11 +127,7 @@ public class CustomSelfRegControllerTest {
     thePersonAccount.recordTypeId = personAcctRecordTypeId;
     update thePersonAccount;
 
-    Profile portalProfile = [
-      SELECT Id
-      FROM Profile
-      WHERE Name = 'Your Portal Profile Name Here'
-    ];
+    Profile portalProfile = [SELECT Id FROM Profile WHERE Name = :portalName];
 
     Schema.DescribeFieldResult userNameDescribe = User.UserName.getDescribe();
     Schema.SObjectField userNameField = userNameDescribe.getSObjectField();
