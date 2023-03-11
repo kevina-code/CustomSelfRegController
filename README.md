@@ -1,4 +1,6 @@
 # CustomSelfRegController
-Readme is a work in progress.
+This apex class is a template that can be used for the self registration portion of a Digital Experience site.
 
-This apex class is a template for the self registration portion of a Digital Experience site.
+<a href="https://githubsfdeploy.herokuapp.com?owner=financialforcedev&amp;repo=apex-mdapi">
+  <img src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png" alt="Deploy to Salesforce" />
+</a>
