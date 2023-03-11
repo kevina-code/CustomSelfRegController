@@ -9,6 +9,8 @@
  * Date : Name : Notes
  */
 global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler {
+  private static final String PORTAL_PERMISSIONSET_NAME = 'Portal_Permission_Set_Name'; // change to your portal permission set name
+
   private final Long CURRENT_TIME = Datetime.now().getTime();
   private final String[] UPPERCASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     .split('');
@@ -158,11 +160,11 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
   @future
   public static void assignPermissionSet(String userId) {
     String portalPermissionSetId = [
-      SELECT Name, Id
+      SELECT Id
       FROM PermissionSet
-      WHERE Name = 'Portal_PermissionSet_Name'
+      WHERE Name = :PORTAL_PERMISSIONSET_NAME
     ]
-    .Id; // Change Portal_PermissionSet_Name to the name of the Permission Set you created for the portal
+    .Id;
     PermissionSetAssignment psa = new PermissionSetAssignment(
       PermissionSetId = portalPermissionSetId,
       AssigneeId = userId
