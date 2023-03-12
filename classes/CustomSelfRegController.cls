@@ -3,7 +3,7 @@
  *  Runs when someone attempts to self register on a Digital Experience site
  *  in which its config uses this class
  *
- * Created by: Kevin Antonioli : 03.10.2023
+ * Created by: Kevin Antonioli (braveitnow@pm.me) : 03.10.2023
  *
  * Revisions:
  * Date : Name : Notes
@@ -24,10 +24,10 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
    *  This method hould create a user and insert it
    *  Password can be null
    *  Return null or throw an exception to fail creation
-   * @param accountId (Id)
-   * @param profileId (Id)
-   * @param registrationAttributes (Map<SObjectField, String)
-   * @param password (String)
+   * @param   accountId               Existing AccountId for the person registering
+   * @param   profileId               ProfileId to assign to the person registering
+   * @param   registrationAttributes  Attributes entered into registration form by person registering
+   * @param   password                Password entered into the form by the person registering
    */
   global Id createUser(
     Id accountId,
@@ -104,9 +104,9 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
   }
 
   /**
-   * @description: throw exception and show error message to user if they didn't correctly fill out self reg form
-   * @param null
-   * @return void
+   * @description   throw exception and show error message to user if they didn't correctly fill out self reg form
+   * @param         null
+   * @return        void
    */
   private void throwExceptions(Exception e) {
     string message = e.getMessage();
@@ -152,7 +152,7 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
   }
 
   /**
-   * @description: assign portal permission set to newly created portal user
+   * @description assign portal permission set to newly created portal user
    *  user that was created upon self registration
    * @param userId (String) : Id of the newly created user that was created during self-registation
    * @return void
@@ -173,10 +173,10 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
   }
 
   /**
-   * @description: Method to autogenerate a password if one was not passed in.
+   * @description:  Method to autogenerate a password if one was not passed in.
    *  By setting a password for a user, we won't send a welcome email to set the password.
-   * @param null
-   * @return newPassword (String)
+   * @param         null
+   * @return        newPassword   randomly generated password
    */
   private String generateRandomPassword() {
     String[] characters = new List<String>(UPPERCASE_CHARS);
@@ -213,13 +213,13 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
   }
 
   /**
-   * @description: TODO: fill out missing java doc information
-   * @param password (String) :
-   * @param addLowerCase (Boolean) :
-   * @param addUpperCase (Boolean) :
-   * @param addNumber (Boolean) :
-   * @param addSpecial (Boolean) :
-   * @return password (String) :
+   * @description: support the generation of a random password
+   * @param   password (String)
+   * @param   addLowerCase (Boolean)
+   * @param   addUpperCase (Boolean)
+   * @param   addNumber (Boolean)
+   * @param   addSpecial (Boolean)
+   * @return  password (String)
    */
   private String addMissingPasswordRequirements(
     String password,
@@ -245,8 +245,8 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: generates a random number from 0 up to, but not including, max.
-   * @param max (Integer)
-   * @return Integer
+   * @param   max (Integer)
+   * @return  Integer
    */
   private Integer generateRandomInt(Integer max) {
     return Math.mod(Math.abs(Crypto.getRandomInteger()), max);
@@ -254,9 +254,9 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: Loops over required fields that were not passed in to set to some default value
-   * @param user (User)
-   * @param contact (Contact)
-   * @return user (User)
+   * @param   user (User)
+   * @param   contact (Contact)
+   * @return  user (User)
    */
   private User handleUnsetRequiredFields(User user, Contact contact) {
     if (String.isBlank(user.LastName)) {
@@ -282,9 +282,9 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: Method to construct a contact for a user
-   * @param user (User)
-   * @param accountId (Id)
-   * @return void
+   * @param   user (User)
+   * @param   accountId (Id)
+   * @return  void
    */
   private void generateContact(User user, Id accountId) {
     // Add logic here if you want to build your own contact for the user
@@ -292,8 +292,8 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: Default implementation to try to provide uniqueness
-   * @param null
-   * @return String
+   * @param   null
+   * @return  String
    */
   private String generateAlias() {
     String timeString = String.valueOf(CURRENT_TIME);
@@ -302,8 +302,8 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: Default implementation to try to provide uniqueness
-   * @param null
-   * @return String
+   * @param   null
+   * @return  String
    */
   private String generateLastName() {
     return 'ExternalUser' + CURRENT_TIME;
@@ -320,8 +320,8 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: Default implementation to try to provide uniqueness
-   * @param null
-   * @return String
+   * @param   null
+   * @return  String
    */
   private String generateEmail() {
     return 'externaluser' + CURRENT_TIME + '@company.com';
@@ -329,8 +329,8 @@ global class CustomSelfRegController implements Auth.ConfigurableSelfRegHandler 
 
   /**
    * @description: Default implementation to try to provide uniqueness
-   * @param null
-   * @return String
+   * @param   null
+   * @return  String
    */
   private String generateCommunityNickname() {
     return 'ExternalUser' + CURRENT_TIME;
